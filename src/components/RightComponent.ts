@@ -17,12 +17,12 @@ export class RightComponent extends LitElement {
     this.count = store.getState().data.count;
     this.text = store.getState().data.text;
     // subscribe to updates
-    this.stateSubscription = store.subscribe((data: any) => {
+    this.stateSubscription = store.subscribe((state) => {
       console.log('RightComponent subscription')
       // multiple values can be subscribed to in a single call
-      this.count = data.count;
-      this.text = data.text;
-    }, state => state.data);
+      this.count = state.data.count;
+      this.text = state.data.text;
+    });
   }
 
   disconnectedCallback(): void {

@@ -5,38 +5,25 @@ import { store } from "../zustand/store";
 export class LeftComponent extends LitElement {
 
   @state()
-  count?: number;
+  private count?: number = store.getState().data.count;
 
-  stateSubscription: Function | null = null;
+  @state()
+  private text?: string = store.getState().data.text;
+
+  private storeSubscription?: Function;
 
   firstUpdated(): void {
-    // initialize from state
-    this.count = store.getState().data.count;
-    // subscribe to updates
-    this.stateSubscription = store.subscribe((data: any) => {
-      console.log('LeftComponent subscription')
-      this.count = data.count;
-    }, state => state.data);
-    // this selector can be as specific as necessary
-    // more generic selectors (like this) can be used, however they trigger the subscription function to run,
-    // however if no @state() or @property() variables change, it won't trigger a re-render of the component
-    // notice how updates to state.text do not put out a "LeftComponent rendered", but still put out a "LeftComponent subscription"
-    // in this case, the proper subscription would be:
-    // store.subscribe((data: number) => this.count = data, state => state.data.count);
-    // however this necessitates additional subscription function declarations and un-registers on disconnectedCallback()
+    this.storeSubscription = store.subscribe(state => {
+      this.count = state.data.count;
+      this.text = state.data.text;
+    });
   }
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
-    // not sure if un-subscribing is necessary
-    this.stateSubscription!();
+    this.storeSubscription!();
   }
 
-  render(): TemplateResult {
-    console.log('LeftComponent rendered')
-    return html`
-      LeftComponent - Count: ${this.count}
-    `;
-  }
+  render = () => html`LeftComponent - Count: ${this.count}, Text: ${this.text}`;
 
 }
